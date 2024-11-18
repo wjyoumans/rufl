@@ -16,7 +16,8 @@
  */
 
 use crate::ops::*;
-use crate::integer::Integer;
+use crate::{Integer, Rational};
+use crate::integer::extras::*;
 use flint_sys::{flint, fmpz, fmpq};
 use libc::{c_long, c_ulong};
 
@@ -94,13 +95,12 @@ impl_unop_unsafe! {
     fmpz::fmpz_complement
 }
 
-/*
 impl_unop_unsafe! {
     None
     Integer, Rational
     Inv {inv}
     fmpq_inv_fmpz
-}*/
+}
 
 impl_binop_unsafe! {
     None
@@ -150,7 +150,6 @@ impl_binop_unsafe! {
 
 }
 
-/*
 impl_binop_unsafe! {
     None
     Integer, Integer, Rational
@@ -162,7 +161,7 @@ impl_binop_unsafe! {
     Pow {pow}
     AssignPow {assign_pow}
     fmpz_pow_fmpz;
-}*/
+}
 
 impl_binop_unsafe! {
     None
@@ -210,7 +209,6 @@ impl_binop_unsafe! {
     fmpz::fmpz_pow_ui;
 }
 
-/*
 impl_binop_unsafe! {
     None
     Integer, u64 {u64 u32 u16 u8}, Rational
@@ -218,7 +216,7 @@ impl_binop_unsafe! {
     Div {div}
     AssignDiv {assign_div}
     fmpz_div_ui;
-}*/
+}
 
 impl_binop_unsafe! {
     None
@@ -261,7 +259,6 @@ impl_binop_unsafe! {
     fmpz_tdiv_r_si;
 }
 
-/*
 impl_binop_unsafe! {
     None
     Integer, i64 {i64 i32 i16 i8}, Rational
@@ -273,7 +270,7 @@ impl_binop_unsafe! {
     Div {div}
     AssignDiv {assign_div}
     fmpz_div_si;
-}*/
+}
 
 impl_binop_unsafe! {
     None
@@ -316,7 +313,6 @@ impl_binop_unsafe! {
     fmpz_ui_tdiv_r;
 }
 
-/*
 impl_binop_unsafe! {
     None
     u64 {u64 u32 u16 u8}, Integer, Rational
@@ -328,7 +324,7 @@ impl_binop_unsafe! {
     Div {div}
     AssignDiv {assign_div}
     fmpz_ui_div;
-}*/
+}
 
 impl_binop_unsafe! {
     None
@@ -371,7 +367,6 @@ impl_binop_unsafe! {
     fmpz_si_tdiv_r;
 }
 
-/*
 impl_binop_unsafe! {
     None
     i64 {i64 i32 i16 i8}, Integer, Rational
@@ -383,8 +378,9 @@ impl_binop_unsafe! {
     Div {div}
     AssignDiv {assign_div}
     fmpz_si_div;
-}*/
+}
 
+/*
 #[inline]
 unsafe fn fmpz_and_ui(res: *mut flint::fmpz, f: *const flint::fmpz, x: c_ulong) {
     fmpz::fmpz_init_set_ui(res, x);
@@ -576,6 +572,7 @@ unsafe fn fmpz_si_div(res: *mut flint::fmpq, f: c_long, g: *const flint::fmpz) {
     fmpq::fmpq_set_fmpz_frac(res, z.as_ptr(), g);
     fmpz::fmpz_clear(z.as_mut_ptr());
 }
+*/
 
 /*
 #[cfg(test)]

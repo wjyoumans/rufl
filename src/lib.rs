@@ -20,6 +20,8 @@
 #[macro_use]
 mod macros;
 
+pub mod flint_extras;
+
 pub mod error;
 pub use error::*;
 
@@ -30,6 +32,12 @@ pub mod structures;
 
 pub mod integer;
 pub use integer::*;
+
+pub mod rational;
+pub use rational::*;
+
+pub mod intmod;
+pub use intmod::*;
 
 pub mod gr;
 pub use gr::*;

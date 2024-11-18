@@ -15,8 +15,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::integer::Integer;
-use crate::error::{Error, Result};
+use crate::{Integer, Rational, IntMod};
+use crate::{Error, Result};
 use crate::util::is_digit;
 use flint_sys::fmpz;
 use std::ffi::CString;
@@ -69,7 +69,6 @@ impl_from_unsafe! {
     fmpz::fmpz_set_si
 }
 
-/*
 impl_from_unsafe! {
     None
     Integer, IntMod
@@ -86,7 +85,7 @@ impl TryFrom<Rational> for Integer {
         if src.denominator().is_one() {
             Ok(src.numerator())
         } else {
-            Err(ConversionError {
+            Err(Error::ConversionError {
                 val: src.to_string(),
                 in_type: "Rational".to_string(),
                 out_type: "Integer".to_string(),
@@ -94,4 +93,3 @@ impl TryFrom<Rational> for Integer {
         }
     }
 }
-*/
