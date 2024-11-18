@@ -19,6 +19,7 @@ serde = ["dep:serde"]
 [dependencies]
 libc = "0.2" 
 thiserror = "1.0"
+libffi = "3.2.0"
 
 [dependencies.flint-sys]
 path = "../flint-rs/flint-sys"

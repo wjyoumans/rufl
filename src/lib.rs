@@ -26,8 +26,13 @@ pub use error::*;
 pub mod ops;
 pub use ops::*;
 
+pub mod structures;
+
 pub mod integer;
 pub use integer::*;
+
+pub mod gr;
+pub use gr::*;
 
 /*
 mod intpoly;
