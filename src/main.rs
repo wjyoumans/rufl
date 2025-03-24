@@ -6,9 +6,16 @@ fn main() {
     println!("a = {}", a);
 
     let b = Rational::new([3, 4]);
-    let res = a*b;
+    println!("b = {}", b);
+    
+    let c = a*b;
+    println!("c = {}", c);
 
-    println!("a*b = {}", res);
+    let f = IntPoly::new([0,1,1,0,1]);
+    println!("f = {}", f);
+
+    let g = f + c;
+    println!("f + c = {}", g);
 
     let zz = GenericCtx::integer_ring();
     println!("{}", zz);

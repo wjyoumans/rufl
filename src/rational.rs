@@ -271,6 +271,7 @@ impl Rational {
         res.tdiv_q_assign(self.denominator());
         res
     }
+    */
     
     #[inline]
     pub fn sign(&self) -> i32 {
@@ -303,6 +304,5 @@ impl Rational {
             res
         }
     }
-    */
 }
 

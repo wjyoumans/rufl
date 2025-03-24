@@ -17,8 +17,6 @@
 
 use flint_sys::{flint, fmpz, fmpq, fmpz_mod, fmpz_mod_types};
 use libc::{c_int, c_long, c_ulong};
-use std::mem::MaybeUninit;
-
 
 #[inline]
 pub unsafe fn fmpz_mod_ui_add(

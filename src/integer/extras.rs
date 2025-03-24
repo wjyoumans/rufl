@@ -16,7 +16,7 @@
  */
 
 use flint_sys::{flint, fmpz, fmpq};
-use libc::{c_int, c_long, c_ulong};
+use libc::{c_long, c_ulong};
 use std::mem::MaybeUninit;
 
 #[inline]

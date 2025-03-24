@@ -19,8 +19,7 @@ use crate::{IntMod, Integer, Rational};
 use crate::ops::*;
 use crate::intmod::extras::*;
 
-use flint_sys::{fmpq, fmpz, fmpz_mod};
-use libc::{c_int, c_long, c_ulong};
+use flint_sys::{fmpz, fmpz_mod};
 
 impl_assign_unsafe! {
     ctx

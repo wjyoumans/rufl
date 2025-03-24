@@ -19,11 +19,8 @@ use crate::{Integer, Rational};
 use crate::ops::*;
 use crate::rational::extras::*;
 
-use flint_sys::{fmpq, fmpz};
-use libc::{c_int, c_long, c_ulong};
-
+use flint_sys::fmpq;
 use std::cmp::Ordering::{self, Equal, Greater, Less};
-use std::mem::MaybeUninit;
 
 
 impl_assign_unsafe! {

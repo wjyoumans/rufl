@@ -205,7 +205,8 @@ impl IntMod {
 
 
 impl IntMod {
-    fn new<T: Into<Integer>>(src: T, ctx: &IntModCtx) -> Self {
+    #[inline]
+    pub fn new<T: Into<Integer>>(src: T, ctx: &IntModCtx) -> Self {
         let mut res = unsafe { 
             IntMod::from_raw(src.into().into_raw(), ctx.clone())
         };

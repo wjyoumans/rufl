@@ -39,6 +39,12 @@ pub use rational::*;
 pub mod intmod;
 pub use intmod::*;
 
+pub mod intpoly;
+pub use intpoly::*;
+
+pub mod ratpoly;
+pub use ratpoly::*;
+
 pub mod gr;
 pub use gr::*;
 

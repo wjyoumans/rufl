@@ -29,9 +29,9 @@
 
 use crate::*;
 use flint_sys::gr;
-use std::ffi::{CStr, CString};
+use std::ffi::CStr;
 use std::fmt;
-use std::hash::{Hash, Hasher};
+//use std::hash::{Hash, Hasher};
 use std::mem::{ManuallyDrop, MaybeUninit};
 use std::rc::Rc;
 
@@ -55,7 +55,8 @@ impl GrCtx {
             GrCtx(ctx.assume_init())
         }
     }    
-    
+
+    /* etc.?
     #[inline]
     pub fn rational_field() -> Self {
         let mut ctx = MaybeUninit::uninit();
@@ -63,13 +64,12 @@ impl GrCtx {
             gr::gr_ctx_init_fmpz(ctx.as_mut_ptr()); 
             GrCtx(ctx.assume_init())
         }
-    }    
+    }
+    */
 }
 
-
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub(crate) enum GrType {
+pub enum GrType {
     IntegerRing,
     RationalField,
     Other,
