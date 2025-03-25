@@ -104,6 +104,9 @@ pub trait Assign<T = Self> {
     fn assign(&mut self, other: T);
 }
 
+pub trait NewMatrix<T> {
+    fn new(src: T, nrows: i64, ncols: i64) -> Self;
+}
 
 ///////////////////////////////////////////////////////////////////
 // Unary Ops

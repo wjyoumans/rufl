@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2021 William Youmans
+ *  Copyright (C) 2024 William Youmans
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,11 +17,9 @@
 
 use crate::*;
 
-use flint_sys::{fmpz, fmpz_mat};
-use inertia_algebra::ops::*;
+use flint_sys::fmpz_mat;
+use crate::intmat::extras::*;
 
-use libc::{c_long, c_ulong};
-use std::mem::MaybeUninit;
 
 impl_assign_unsafe! {
     matrix
@@ -193,53 +191,3 @@ impl_binop_unsafe! {
     fmpz_mat_si_scalar_mul;
 }
 
-#[inline]
-unsafe fn fmpz_mat_fmpz_scalar_mul(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: *const fmpz::fmpz,
-    g: *const fmpz_mat::fmpz_mat_struct,
-) {
-    fmpz_mat::fmpz_mat_scalar_mul_fmpz(res, g, f);
-}
-
-#[inline]
-unsafe fn fmpz_mat_ui_scalar_mul(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: c_ulong,
-    g: *const fmpz_mat::fmpz_mat_struct,
-) {
-    fmpz_mat::fmpz_mat_scalar_mul_ui(res, g, f);
-}
-
-#[inline]
-unsafe fn fmpz_mat_si_scalar_mul(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: c_long,
-    g: *const fmpz_mat::fmpz_mat_struct,
-) {
-    fmpz_mat::fmpz_mat_scalar_mul_si(res, g, f);
-}
-
-#[inline]
-unsafe fn fmpz_mat_scalar_mod_ui(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: *const fmpz_mat::fmpz_mat_struct,
-    g: c_ulong,
-) {
-    let mut z = MaybeUninit::uninit();
-    fmpz::fmpz_init_set_ui(z.as_mut_ptr(), g);
-    fmpz_mat::fmpz_mat_scalar_mod_fmpz(res, f, z.as_ptr());
-    fmpz::fmpz_clear(z.as_mut_ptr());
-}
-
-#[inline]
-unsafe fn fmpz_mat_scalar_mod_si(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: *const fmpz_mat::fmpz_mat_struct,
-    g: c_long,
-) {
-    let mut z = MaybeUninit::uninit();
-    fmpz::fmpz_init_set_si(z.as_mut_ptr(), g);
-    fmpz_mat::fmpz_mat_scalar_mod_fmpz(res, f, z.as_ptr());
-    fmpz::fmpz_clear(z.as_mut_ptr());
-}

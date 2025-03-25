@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2021 William Youmans
+ *  Copyright (C) 2024 William Youmans
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,8 +15,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//mod ops;
-//  mod conv;
+mod ops;
+mod extras;
+mod conv;
 
 #[cfg(feature = "serde")]
 mod serde;
@@ -94,6 +95,105 @@ impl Hash for IntMat {
     }
 }
 
+impl<const CAP: usize> NewMatrix<[&Integer; CAP]> for IntMat {
+    fn new(src: [&Integer; CAP], nrows: i64, ncols: i64) -> Self {
+        let nrows_ui: usize = nrows.try_into().expect(
+            "Cannot convert signed long to usize.");
+        let ncols_ui: usize = ncols.try_into().expect(
+            "Cannot convert signed long to usize.");
+        
+        assert_eq!(src.len(), nrows_ui * ncols_ui);
+        let mut res = IntMat::zero(nrows, ncols);
+
+        let mut col;
+        let mut row = 0usize;
+        for (i, x) in src.into_iter().enumerate() {
+            col = i % ncols_ui;
+            if col == 0 && i != 0 {
+                row += 1;
+            }
+            res.set_entry(row, col, x);
+        }
+        res
+    }
+}
+
+impl<T, const CAP: usize> NewMatrix<[T; CAP]> for IntMat 
+where
+    T: Into<Integer>
+{
+    fn new(src: [T; CAP], nrows: i64, ncols: i64) -> Self {
+        let nrows_ui: usize = nrows.try_into().expect(
+            "Cannot convert signed long to usize.");
+        let ncols_ui: usize = ncols.try_into().expect(
+            "Cannot convert signed long to usize.");
+        
+        assert_eq!(src.len(), nrows_ui * ncols_ui);
+        let mut res = IntMat::zero(nrows, ncols);
+
+        let mut col;
+        let mut row = 0usize;
+        for (i, x) in src.into_iter().enumerate() {
+            col = i % ncols_ui;
+            if col == 0 && i != 0 {
+                row += 1;
+            }
+            res.set_entry(row, col, x.into());
+        }
+        res
+    }
+}
+
+impl NewMatrix<&[Integer]> for IntMat {
+    fn new(src: &[Integer], nrows: i64, ncols: i64) -> Self {
+        let nrows_ui: usize = nrows.try_into().expect(
+            "Cannot convert signed long to usize.");
+        let ncols_ui: usize = ncols.try_into().expect(
+            "Cannot convert signed long to usize.");
+        
+        assert_eq!(src.len(), nrows_ui * ncols_ui);
+        let mut res = IntMat::zero(nrows, ncols);
+
+        let mut col;
+        let mut row = 0usize;
+        for (i, x) in src.iter().enumerate() {
+            col = i % ncols_ui;
+            if col == 0 && i != 0 {
+                row += 1;
+            }
+            res.set_entry(row, col, x);
+        }
+        res
+    }
+}
+
+impl<'a, T> NewMatrix<&'a [T]> for IntMat
+where
+    &'a T: Into<Integer>
+{
+    fn new(src: &'a [T], nrows: i64, ncols: i64) -> Self {
+        let nrows_ui: usize = nrows.try_into().expect(
+            "Cannot convert signed long to usize.");
+        let ncols_ui: usize = ncols.try_into().expect(
+            "Cannot convert signed long to usize.");
+        
+        assert_eq!(src.len(), nrows_ui * ncols_ui);
+        let mut res = IntMat::zero(nrows, ncols);
+
+        let mut col;
+        let mut row = 0usize;
+        for (i, x) in src.iter().enumerate() {
+            col = i % ncols_ui;
+            if col == 0 && i != 0 {
+                row += 1;
+            }
+            res.set_entry(row, col, x.into());
+        }
+        res
+    }
+}
+
+
 impl IntMat {
     /// Returns a pointer to the inner [FLINT integer matrix][fmpz_mat::fmpz_mat].
     #[inline]
@@ -120,32 +220,6 @@ impl IntMat {
         let inner = self.inner;
         let _ = ManuallyDrop::new(self);
         inner
-    }
-}
-
-impl IntMat {
-    pub fn new<T, const CAP: usize>(src: [T; CAP], nrows: i64, ncols: i64) -> Self
-    where
-        T: Into<Integer>
-    {
-        let nrows_ui: usize = nrows.try_into().expect(
-            "Cannot convert signed long to usize.");
-        let ncols_ui: usize = ncols.try_into().expect(
-            "Cannot convert signed long to usize.");
-        
-        assert_eq!(src.len(), nrows_ui * ncols_ui);
-        let mut res = IntMat::zero(nrows, ncols);
-
-        let mut col;
-        let mut row = 0usize;
-        for (i, x) in src.into_iter().enumerate() {
-            col = i % ncols_ui;
-            if col == 0 && i != 0 {
-                row += 1;
-            }
-            res.set_entry(row, col, x.into());
-        }
-        res
     }
 }
 

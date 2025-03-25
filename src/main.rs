@@ -19,4 +19,7 @@ fn main() {
 
     let zz = GenericCtx::integer_ring();
     println!("{}", zz);
+
+    let mat = IntMat::new([1,0,0,1], 2, 2);
+    println!("mat = {}", mat);
 }

@@ -2,7 +2,7 @@
 name = "rufl"
 version = "0.1.0"
 edition = "2021"
-authors = ["William Youmans <wyoumans@usf.edu>"]
+authors = ["William Youmans <youmans.wj@gmail.com>"]
 description = "Number theory library using FLINT 3."
 homepage = "https://github.com/wjyoumans/rufl"
 repository = "https://github.com/wjyoumans/rufl"
