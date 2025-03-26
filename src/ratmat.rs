@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2021 William Youmans
+ *  Copyright (C) 2024 William Youmans
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,14 +15,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+mod extras;
 mod ops;
-//mod conv;
+mod conv;
 
 //#[cfg(feature = "serde")]
 //mod serde;
 
 use crate::*;
-use flint_sys::{fmpq, fmpq_mat};
+use flint_sys::fmpq_types::*;
+use flint_sys::fmpq_mat::*;
+use flint_sys::fmpq::*;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::mem::MaybeUninit;
@@ -30,7 +33,7 @@ use std::mem::MaybeUninit;
 
 #[derive(Debug)]
 pub struct RatMat {
-    inner: fmpq_mat::fmpq_mat_struct,
+    inner: fmpq_mat_struct,
 }
 
 impl AsRef<RatMat> for RatMat {
@@ -44,7 +47,7 @@ impl Clone for RatMat {
     fn clone(&self) -> Self {
         let mut z = MaybeUninit::uninit();
         unsafe {
-            fmpq_mat::fmpq_mat_init_set(z.as_mut_ptr(), self.as_ptr());
+            fmpq_mat_init_set(z.as_mut_ptr(), self.as_ptr());
             RatMat::from_raw(z.assume_init())
         }
     }
@@ -79,7 +82,7 @@ impl fmt::Display for RatMat {
 impl Drop for RatMat {
     #[inline]
     fn drop(&mut self) {
-        unsafe { fmpq_mat::fmpq_mat_clear(self.as_mut_ptr()) }
+        unsafe { fmpq_mat_clear(self.as_mut_ptr()) }
     }
 }
 
@@ -208,26 +211,26 @@ impl RatMat {
         j
     }
 
-    #[inline]
-    pub fn new<S>(src: S, nrows: i64, ncols: i64) -> RatMat 
-    where
-        Self: NewMatrix<S>
-    {
-        <RatMat as NewMatrix<S>>::new(src, nrows, ncols)
-    }
+    // #[inline]
+    // pub fn new<S>(src: S, nrows: i64, ncols: i64) -> RatMat 
+    // where
+    //     Self: NewMatrix<S>
+    // {
+    //     <RatMat as NewMatrix<S>>::new(src, nrows, ncols)
+    // }
 
     #[inline]
-    pub const fn as_ptr(&self) -> *const fmpq_mat::fmpq_mat_struct {
+    pub const fn as_ptr(&self) -> *const fmpq_mat_struct {
         &self.inner
     }
 
     #[inline]
-    pub fn as_mut_ptr(&mut self) -> *mut fmpq_mat::fmpq_mat_struct {
+    pub fn as_mut_ptr(&mut self) -> *mut fmpq_mat_struct {
         &mut self.inner
     }
 
     #[inline]
-    pub fn from_raw(raw: fmpq_mat::fmpq_mat_struct) -> RatMat {
+    pub fn from_raw(raw: fmpq_mat_struct) -> RatMat {
         RatMat { inner: raw }
     }
 
@@ -235,7 +238,7 @@ impl RatMat {
     pub fn zero(nrows: i64, ncols: i64) -> RatMat {
         let mut z = MaybeUninit::uninit();
         unsafe {
-            fmpq_mat::fmpq_mat_init(z.as_mut_ptr(), nrows, ncols);
+            fmpq_mat_init(z.as_mut_ptr(), nrows, ncols);
             RatMat::from_raw(z.assume_init())
         }
     }
@@ -244,7 +247,7 @@ impl RatMat {
     pub fn one(dim: i64) -> RatMat {
         let mut res = RatMat::zero(dim, dim);
         unsafe {
-            fmpq_mat::fmpq_mat_one(res.as_mut_ptr());
+            fmpq_mat_one(res.as_mut_ptr());
         }
         res
     }
@@ -253,7 +256,7 @@ impl RatMat {
     #[inline]
     pub fn zero_assign(&mut self) {
         unsafe {
-            fmpq_mat::fmpq_mat_zero(self.as_mut_ptr());
+            fmpq_mat_zero(self.as_mut_ptr());
         }
     }
     
@@ -262,7 +265,7 @@ impl RatMat {
     pub fn one_assign(&mut self) {
         assert!(self.is_square());
         unsafe {
-            fmpq_mat::fmpq_mat_one(self.as_mut_ptr());
+            fmpq_mat_one(self.as_mut_ptr());
         }
     }
 
@@ -275,7 +278,7 @@ impl RatMat {
     /// Return the number of rows.
     #[inline]
     pub fn nrows_si(&self) -> i64 {
-        unsafe { fmpq_mat::fmpq_mat_nrows(self.as_ptr())}
+        unsafe { fmpq_mat_nrows(self.as_ptr())}
     }
 
     /// Return the number of columns.
@@ -287,27 +290,27 @@ impl RatMat {
     /// Return the number of columns.
     #[inline]
     pub fn ncols_si(&self) -> i64 {
-        unsafe { fmpq_mat::fmpq_mat_ncols(self.as_ptr())}
+        unsafe { fmpq_mat_ncols(self.as_ptr())}
     }
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        unsafe { fmpq_mat::fmpq_mat_is_empty(self.as_ptr()) != 0 }
+        unsafe { fmpq_mat_is_empty(self.as_ptr()) != 0 }
     }
 
     #[inline]
     pub fn is_square(&self) -> bool {
-        unsafe { fmpq_mat::fmpq_mat_is_square(self.as_ptr()) != 0 }
+        unsafe { fmpq_mat_is_square(self.as_ptr()) != 0 }
     }
 
     #[inline]
     pub fn is_zero(&self) -> bool {
-        unsafe { fmpq_mat::fmpq_mat_is_zero(self.as_ptr()) != 0 }
+        unsafe { fmpq_mat_is_zero(self.as_ptr()) != 0 }
     }
 
     #[inline]
     pub fn is_one(&self) -> bool {
-        unsafe { fmpq_mat::fmpq_mat_is_one(self.as_ptr()) != 0 }
+        unsafe { fmpq_mat_is_one(self.as_ptr()) != 0 }
     }
 
     /// Get the `(i, j)`-th entry of the matrix.
@@ -327,8 +330,8 @@ impl RatMat {
     pub fn assign_entry(&self, i: usize, j: usize, out: &mut Rational) {
         let (i, j) = self.check_indices(i, j);
         unsafe {
-            let x = fmpq_mat::fmpq_mat_entry(self.as_ptr(), i, j);
-            fmpq::fmpq_set(out.as_mut_ptr(), x);
+            let x = fmpq_mat_entry(self.as_ptr(), i, j);
+            fmpq_set(out.as_mut_ptr(), x);
         }
     }
 
@@ -337,8 +340,8 @@ impl RatMat {
     pub fn set_entry<T: AsRef<Rational>>(&mut self, i: usize, j: usize, e: T) {
         let (i, j) = self.check_indices(i, j);
         unsafe {
-            let x = fmpq_mat::fmpq_mat_entry(self.as_ptr(), i, j);
-            fmpq::fmpq_set(x, e.as_ref().as_ptr());
+            let x = fmpq_mat_entry(self.as_ptr(), i, j);
+            fmpq_set(x, e.as_ref().as_ptr());
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2021 William Youmans
+ *  Copyright (C) 2024 William Youmans
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,15 +18,12 @@
 use crate::*;
 
 use flint_sys::{
-    fmpz, 
     //fmpq, 
     fmpz_mat, 
     fmpq_mat
 };
-use inertia_algebra::ops::*;
-use libc::{c_long, c_ulong};
-
-use std::mem::MaybeUninit;
+use crate::ops::*;
+use crate::ratmat::extras::*;
 
 // TODO: Pow
 
@@ -199,87 +196,3 @@ impl_binop_unsafe! {
     fmpq_mat_si_scalar_mul;
 }
 
-#[inline]
-unsafe fn fmpq_mat_scalar_mul_ui(
-    res: *mut fmpq_mat::fmpq_mat_struct,
-    f: *const fmpq_mat::fmpq_mat_struct,
-    g: c_ulong,
-) {
-    let mut z = MaybeUninit::uninit();
-    fmpz::fmpz_init_set_ui(z.as_mut_ptr(), g);
-    fmpq_mat::fmpq_mat_scalar_mul_fmpz(res, f, z.as_ptr());
-    fmpz::fmpz_clear(z.as_mut_ptr());
-}
-
-#[inline]
-unsafe fn fmpq_mat_scalar_mul_si(
-    res: *mut fmpq_mat::fmpq_mat_struct,
-    f: *const fmpq_mat::fmpq_mat_struct,
-    g: c_long,
-) {
-    let mut z = MaybeUninit::uninit();
-    fmpz::fmpz_init_set_si(z.as_mut_ptr(), g);
-    fmpq_mat::fmpq_mat_scalar_mul_fmpz(res, f, z.as_ptr());
-    fmpz::fmpz_clear(z.as_mut_ptr());
-}
-
-#[inline]
-unsafe fn fmpq_mat_fmpz_scalar_mul(
-    res: *mut fmpq_mat::fmpq_mat_struct,
-    f: *const fmpz::fmpz,
-    g: *const fmpq_mat::fmpq_mat_struct,
-) {
-    fmpq_mat::fmpq_mat_scalar_mul_fmpz(res, g, f);
-}
-
-/*
-#[inline]
-unsafe fn fmpq_mat_fmpq_scalar_mul(
-    res: *mut fmpq_mat::fmpq_mat_struct,
-    f: *const fmpq::fmpq,
-    g: *const fmpq_mat::fmpq_mat_struct,
-) {
-    fmpq_mat::fmpq_mat_scalar_mul_fmpq(res, g, f);
-}*/
-
-#[inline]
-unsafe fn fmpq_mat_ui_scalar_mul(
-    res: *mut fmpq_mat::fmpq_mat_struct,
-    f: c_ulong,
-    g: *const fmpq_mat::fmpq_mat_struct,
-) {
-    fmpq_mat_scalar_mul_ui(res, g, f);
-}
-
-#[inline]
-unsafe fn fmpq_mat_si_scalar_mul(
-    res: *mut fmpq_mat::fmpq_mat_struct,
-    f: c_long,
-    g: *const fmpq_mat::fmpq_mat_struct,
-) {
-    fmpq_mat_scalar_mul_si(res, g, f);
-}
-
-#[inline]
-unsafe fn fmpq_mat_get_fmpz_mat_mod_ui(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: *const fmpq_mat::fmpq_mat_struct,
-    g: c_ulong,
-) {
-    let mut z = MaybeUninit::uninit();
-    fmpz::fmpz_init_set_ui(z.as_mut_ptr(), g);
-    fmpq_mat::fmpq_mat_get_fmpz_mat_mod_fmpz(res, f, z.as_ptr());
-    fmpz::fmpz_clear(z.as_mut_ptr());
-}
-
-#[inline]
-unsafe fn fmpq_mat_get_fmpz_mat_mod_si(
-    res: *mut fmpz_mat::fmpz_mat_struct,
-    f: *const fmpq_mat::fmpq_mat_struct,
-    g: c_long,
-) {
-    let mut z = MaybeUninit::uninit();
-    fmpz::fmpz_init_set_si(z.as_mut_ptr(), g);
-    fmpq_mat::fmpq_mat_get_fmpz_mat_mod_fmpz(res, f, z.as_ptr());
-    fmpz::fmpz_clear(z.as_mut_ptr());
-}

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2021 William Youmans
+ *  Copyright (C) 2024 William Youmans
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,28 +15,29 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use flint_sys::fmpq_mat;
+use flint_sys::fmpq_mat::*;
+use std::mem::MaybeUninit;
 use crate::*;
 
 impl_from! {
     RatMat, IntMat
     {
         fn from(x: &IntMat) -> RatMat {
-            let rm = RatMatSpace::init(x.nrows(), x.ncols());
-            let mut res = rm.default();
+            let mut z = MaybeUninit::uninit();
             unsafe {
-                fmpq_mat::fmpq_mat_set_fmpz_mat(res.as_mut_ptr(), x.as_ptr());
+                fmpq_mat_init(z.as_mut_ptr(), x.nrows() as i64, x.ncols() as i64);
+                fmpq_mat_set_fmpz_mat(z.as_mut_ptr(), x.as_ptr());
+                RatMat::from_raw(z.assume_init())
             }
-            res
         }
     }
 }
 
-impl_from! {
-    RatMat, IntModMat
-    {
-        fn from(x: &IntModMat) -> RatMat {
-            RatMat::from(IntMat::from(x))
-        }
-    }
-}
+// impl_from! {
+//     RatMat, IntModMat
+//     {
+//         fn from(x: &IntModMat) -> RatMat {
+//             RatMat::from(IntMat::from(x))
+//         }
+//     }
+// }

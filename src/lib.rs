@@ -51,6 +51,9 @@ pub use intmodpoly::*;
 pub mod intmat;
 pub use intmat::*;
 
+pub mod ratmat;
+pub use ratmat::*;
+
 pub mod gr;
 pub use gr::*;
 
