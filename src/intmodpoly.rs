@@ -15,11 +15,16 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod ops;
+//mod ops;
 mod conv;
+mod extras;
+mod ops;
 
 use crate::*;
-use flint_sys::{fmpz, fmpz_mod, fmpz_mod_poly};
+use flint_sys::flint;
+use flint_sys::fmpz_mod_types::*;
+use flint_sys::fmpz_mod_poly::*;
+
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::mem::{ManuallyDrop, MaybeUninit};
@@ -27,7 +32,7 @@ use std::mem::{ManuallyDrop, MaybeUninit};
 
 #[derive(Debug)]
 pub struct IntModPoly {
-    inner: fmpz_mod_poly::fmpz_mod_poly_struct,
+    inner: fmpz_mod_poly_struct,
     ctx: IntModCtx,
 }
 
@@ -43,7 +48,7 @@ impl Clone for IntModPoly {
     fn clone(&self) -> Self {
         let mut res = IntModPoly::zero(self.context());
         unsafe {
-            fmpz_mod_poly::fmpz_mod_poly_set(
+            fmpz_mod_poly_set(
                 res.as_mut_ptr(), 
                 self.as_ptr(), 
                 self.ctx_as_ptr()
@@ -64,7 +69,7 @@ impl Drop for IntModPoly {
     #[inline]
     fn drop(&mut self) {
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_clear(self.as_mut_ptr(), self.ctx_as_ptr())
+            fmpz_mod_poly_clear(self.as_mut_ptr(), self.ctx_as_ptr())
         }
     }
 }
@@ -82,8 +87,8 @@ impl<T: Into<IntPoly>> NewCtx<T, IntModCtx> for IntModPoly {
     fn new(src: T, ctx: &IntModCtx) -> Self {
         let mut z = MaybeUninit::uninit();
         unsafe {
-            fmpz_mod_poly::fmpz_mod_poly_init(z.as_mut_ptr(), ctx.as_ptr());
-            fmpz_mod_poly::fmpz_mod_poly_set_fmpz_poly(
+            fmpz_mod_poly_init(z.as_mut_ptr(), ctx.as_ptr());
+            fmpz_mod_poly_set_fmpz_poly(
                 z.as_mut_ptr(), 
                 src.into().as_ptr(),
                 ctx.as_ptr()
@@ -97,7 +102,7 @@ impl IntModPoly {
     pub fn with_capacity(capacity: usize, ctx: &IntModCtx) -> Self {
         let mut z = MaybeUninit::uninit();
         unsafe {
-            fmpz_mod_poly::fmpz_mod_poly_init2(
+            fmpz_mod_poly_init2(
                 z.as_mut_ptr(),
                 capacity.try_into().expect("Cannot convert input to a signed long."),
                 ctx.as_ptr()
@@ -110,7 +115,7 @@ impl IntModPoly {
     pub fn zero(ctx: &IntModCtx) -> IntModPoly {
         let mut z = MaybeUninit::uninit();
         unsafe {
-            fmpz_mod_poly::fmpz_mod_poly_init(z.as_mut_ptr(), ctx.as_ptr());
+            fmpz_mod_poly_init(z.as_mut_ptr(), ctx.as_ptr());
             IntModPoly::from_raw(z.assume_init(), ctx.clone())
         }
     }
@@ -118,27 +123,27 @@ impl IntModPoly {
     #[inline]
     pub fn one(ctx: &IntModCtx) -> IntModPoly {
         let mut res = IntModPoly::zero(ctx);
-        unsafe{ fmpz_mod_poly::fmpz_mod_poly_one(res.as_mut_ptr(), ctx.as_ptr()); }
+        unsafe{ fmpz_mod_poly_one(res.as_mut_ptr(), ctx.as_ptr()); }
         res
     }
     
     #[inline]
-    pub const fn as_ptr(&self) -> *const fmpz_mod_poly::fmpz_mod_poly_struct {
+    pub const fn as_ptr(&self) -> *const fmpz_mod_poly_struct {
         &self.inner
     }
 
     #[inline]
-    pub fn as_mut_ptr(&mut self) -> *mut fmpz_mod_poly::fmpz_mod_poly_struct {
+    pub fn as_mut_ptr(&mut self) -> *mut fmpz_mod_poly_struct {
         &mut self.inner
     }
 
     #[inline]
-    pub fn ctx_as_ptr(&self) -> *const fmpz_mod::fmpz_mod_ctx_struct {
+    pub fn ctx_as_ptr(&self) -> *const fmpz_mod_ctx_struct {
         self.context().as_ptr()
     }
     
     #[inline]
-    pub fn modulus_as_ptr(&self) -> *const fmpz::fmpz {
+    pub fn modulus_as_ptr(&self) -> *const flint::fmpz {
         self.context().modulus_as_ptr()
     }
 
@@ -157,14 +162,14 @@ impl IntModPoly {
 
     #[inline]
     pub const unsafe fn from_raw(
-        inner: fmpz_mod_poly::fmpz_mod_poly_struct, 
+        inner: fmpz_mod_poly_struct, 
         ctx: IntModCtx
     ) -> Self {
         IntModPoly { inner, ctx }
     }
     
     #[inline]
-    pub const fn into_raw(self) -> fmpz_mod_poly::fmpz_mod_poly_struct {
+    pub const fn into_raw(self) -> fmpz_mod_poly_struct {
         let inner = self.inner;
         let _ = ManuallyDrop::new(self);
         inner
@@ -183,7 +188,7 @@ impl IntModPoly {
     #[inline]
     pub fn is_zero(&self) -> bool {
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_is_zero(
+            fmpz_mod_poly_is_zero(
                 self.as_ptr(), 
                 self.ctx_as_ptr()
             ) == 1
@@ -193,7 +198,7 @@ impl IntModPoly {
     #[inline]
     pub fn is_one(&self) -> bool {
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_is_one(
+            fmpz_mod_poly_is_one(
                 self.as_ptr(), 
                 self.ctx_as_ptr()
             ) == 1
@@ -203,7 +208,7 @@ impl IntModPoly {
     #[inline]
     pub fn is_gen(&self) -> bool {
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_is_gen(
+            fmpz_mod_poly_is_gen(
                 self.as_ptr(), 
                 self.ctx_as_ptr()
             ) == 1
@@ -214,7 +219,7 @@ impl IntModPoly {
     #[inline]
     pub fn len(&self) -> usize {
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_length(
+            fmpz_mod_poly_length(
                 self.as_ptr(), 
                 self.ctx_as_ptr()
             ).try_into().unwrap()
@@ -224,7 +229,7 @@ impl IntModPoly {
     #[inline]
     pub fn degree(&self) -> i64 {
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_degree(self.as_ptr(), self.ctx_as_ptr()) 
+            fmpz_mod_poly_degree(self.as_ptr(), self.ctx_as_ptr()) 
         }
     }
     
@@ -232,7 +237,7 @@ impl IntModPoly {
         let ctx = self.context();
         let mut res = IntMod::zero(&ctx);
         unsafe { 
-            fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz(
+            fmpz_mod_poly_get_coeff_fmpz(
                 res.as_mut_ptr(), 
                 self.as_ptr(), 
                 i.try_into().expect("Cannot convert index to a signed long."),
@@ -244,7 +249,7 @@ impl IntModPoly {
     
     pub fn set_coeff<T: AsRef<IntMod>>(&mut self, i: usize, coeff: T) {
         unsafe {
-            fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz(
+            fmpz_mod_poly_set_coeff_fmpz(
                 self.as_mut_ptr(),                                 
                 i.try_into().expect("Cannot convert index to a signed long."), 
                 coeff.as_ref().as_ptr(),

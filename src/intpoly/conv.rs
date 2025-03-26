@@ -15,10 +15,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::{Integer, IntMod, IntPoly};
+use crate::{Integer, IntMod, IntPoly, IntModPoly};
 use flint_sys::{
-    fmpz_poly, 
-    //fmpz_mod_poly, 
+    fmpz_poly,
+    fmpz_mod_poly, 
     //fq_default as fq
 };
 
@@ -47,13 +47,13 @@ impl_from_unsafe! {
     fmpz_poly::fmpz_poly_set_fmpz
 }
 
-/*
 impl_from_unsafe! {
     ctx_in
     IntPoly, IntModPoly
     fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly
 }
 
+/*
 impl_from_unsafe! {
     ctx_in
     IntPoly, FinFldElem

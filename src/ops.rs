@@ -104,6 +104,10 @@ pub trait Assign<T = Self> {
     fn assign(&mut self, other: T);
 }
 
+pub trait NewCtx<T, Ctx> {
+    fn new(src: T, ctx: &Ctx) -> Self;
+}
+
 pub trait NewMatrix<T> {
     fn new(src: T, nrows: i64, ncols: i64) -> Self;
 }

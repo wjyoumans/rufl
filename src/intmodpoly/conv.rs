@@ -27,20 +27,20 @@ impl_from_unsafe! {
     fmpz_mod_poly::fmpz_mod_poly_set_fmpz
 }
 
-impl_from! {
-    IntModPoly, FinFldElem
-    {
-        fn from(x: &FinFldElem) -> IntModPoly {
-            let ctx = IntModCtx::new(x.prime());
-            let mut res = IntModPoly::zero(&ctx);
-            unsafe {
-                fq::fq_default_get_fmpz_mod_poly(
-                    res.as_mut_ptr(),
-                    x.as_ptr(),
-                    x.ctx_as_ptr(),
-                );
-            }
-            res
-        }
-    }
-}
+// impl_from! {
+//     IntModPoly, FinFldElem
+//     {
+//         fn from(x: &FinFldElem) -> IntModPoly {
+//             let ctx = IntModCtx::new(x.prime());
+//             let mut res = IntModPoly::zero(&ctx);
+//             unsafe {
+//                 fq::fq_default_get_fmpz_mod_poly(
+//                     res.as_mut_ptr(),
+//                     x.as_ptr(),
+//                     x.ctx_as_ptr(),
+//                 );
+//             }
+//             res
+//         }
+//     }
+// }
